@@ -14,9 +14,11 @@ def create_line(rho, theta, img):
     xs = []
     ys = []
     # Transform a point in Hough space to a line in xy-space.
+    print(rho,theta)
     a = - (np.cos(theta)/np.sin(theta)) # slope of the line
     b = (rho/np.sin(theta)) # y-intersect of
     for x in range(img.shape[1]):
+        
         y = a * x + b
         if y > img.shape[0] * 0.6 and y < img.shape[0]:
             xs.append(x)
