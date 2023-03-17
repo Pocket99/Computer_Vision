@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 from utils import computeHistogram, createTextons
 
+
 N_img = 7 # number of train/test images
 K = 50 # number of clusters
 
@@ -29,3 +30,4 @@ model = {'textons': textons, 'hist_train': hist_train, 'F': F}
 with open("model.pkl", "wb") as outfile:
     pickle.dump(model, outfile)
 outfile.close()
+
