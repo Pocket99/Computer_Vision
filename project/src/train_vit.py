@@ -39,19 +39,24 @@ class BirdDataset(Dataset):
         return image, label
 
 
-csv_file = "/home/ziruiqiu/comp425/project/birds.csv"
-train_dir = "/home/ziruiqiu/comp425/project/"
-val_dir = "/home/ziruiqiu/comp425/project/"
-test_dir = "/home/ziruiqiu/comp425/project/"
+train_csv = "/home/ziruiqiu/comp425/project/birds.csv"
+val_csv = "/home/ziruiqiu/comp425/project/valid.csv"
+test_csv = "/home/ziruiqiu/comp425/project/test.csv"
 
-train_dataset = BirdDataset(csv_file, train_dir)
-val_dataset = BirdDataset(csv_file, val_dir)
-test_dataset = BirdDataset(csv_file, test_dir)
+train_dir = "/home/ziruiqiu/comp425/project"
+val_dir = "/home/ziruiqiu/comp425/project"
+test_dir = "/home/ziruiqiu/comp425/project"
+
+train_dataset = BirdDataset(train_csv, train_dir)
+val_dataset = BirdDataset(val_csv, val_dir)
+test_dataset = BirdDataset(test_csv, test_dir)
 
 train_size = len(train_dataset)
 val_size = len(val_dataset)
 test_size = len(test_dataset)
-
+print(f"Train size: {train_size}")
+print(f"Val size: {val_size}")
+print(f"Test size: {test_size}")
 data_transforms = {
     'train': transforms.Compose([
         transforms.RandomResizedCrop(224),
@@ -101,7 +106,7 @@ test_loader = DataLoader(test_dataset, batch_size=64, shuffle=False, num_workers
 
 writer = SummaryWriter('experiments/vit_base_patch16_224_1')
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(model, criterion, optimizer, scheduler, num_epochs):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -163,9 +168,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
-
+        writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch)
         print()
-    writer.add_scalars("Loss", {"Train": train_loss, "Validation": val_loss}, epoch)
+    
     time_elapsed = time.time() - since
     print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
     print(f'Best val Acc: {best_acc:4f}')
@@ -175,7 +180,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     return model
 
 # Train the model
-trained_model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=25)
+trained_model = train_model(model, criterion, optimizer, exp_lr_scheduler, num_epochs=20)
 
 # Save the model
 torch.save(trained_model.state_dict(), '/home/ziruiqiu/comp425/project/models/vit_base_patch16_224_1.pth')
